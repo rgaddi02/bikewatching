@@ -52,40 +52,4 @@ map.on('load', async () => {
     source: 'cambridge_route',
     paint: bikeLaneStyle,
   });
-
-  // Stations (Step 3)
-  try {
-    const jsonurl = 'https://dsc106.com/labs/lab07/data/bluebikes-stations.json';
-    const jsonData = await d3.json(jsonurl);
-    console.log('Loaded JSON Data:', jsonData);
-
-    const stations = jsonData.data.stations;
-    console.log('Stations Array:', stations);
-
-    const circles = svg
-      .selectAll('circle')
-      .data(stations)
-      .enter()
-      .append('circle')
-      .attr('r', 5)
-      .attr('fill', 'steelblue')
-      .attr('stroke', 'white')
-      .attr('stroke-width', 1)
-      .attr('opacity', 0.8);
-
-    function updatePositions() {
-      circles
-        .attr('cx', (d) => getCoords(d).cx)
-        .attr('cy', (d) => getCoords(d).cy);
-    }
-
-    updatePositions();
-
-    map.on('move', updatePositions);
-    map.on('zoom', updatePositions);
-    map.on('resize', updatePositions);
-    map.on('moveend', updatePositions);
-  } catch (error) {
-    console.error('Error loading JSON:', error);
-  }
 });
