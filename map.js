@@ -17,6 +17,7 @@ const map = new mapboxgl.Map({
 const svg = d3.select('#map').select('svg');
 
 // Trips pre-sorted into one bucket per minute of the day
+const stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
 let departuresByMinute = Array.from({ length: 1440 }, () => []);
 let arrivalsByMinute = Array.from({ length: 1440 }, () => []);
 
@@ -134,6 +135,9 @@ map.on('load', async () => {
             .enter()
             .append('circle')
             .attr('r', (d) => radiusScale(d.totalTraffic))
+            .style('--departure-ratio', (d) =>
+                d.totalTraffic ? stationFlow(d.departures / d.totalTraffic) : 0.5,
+            )
             .each(function (d) {
                 d3.select(this).append('title');
             });
@@ -165,6 +169,9 @@ map.on('load', async () => {
                 .data(filteredStations, (d) => d.short_name)
                 .join('circle')
                 .attr('r', (d) => radiusScale(d.totalTraffic))
+                .style('--departure-ratio', (d) =>
+                    d.totalTraffic ? stationFlow(d.departures / d.totalTraffic) : 0.5,
+                )
                 .select('title')
                 .text((d) => `${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
         }
